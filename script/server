@@ -1,0 +1,15 @@
+#!/bin/bash -i
+
+set -e
+
+cd "$( dirname "$0" )/.."
+
+# Start smee client in background
+pipenv run python ./smee.py &
+
+# Kill background task (smee, above) on SIGINT
+# https://unix.stackexchange.com/a/204619
+trap 'kill -s INT %1' SIGINT
+
+# Start flask app
+pipenv run flask run
