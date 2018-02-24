@@ -1,25 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 
-import os
-import time
-
 import requests
-import jwt
+
+import jsonwebtoken
 
 
-# Generate the JWT
-payload = {
-  # issued at time
-  'iat': int(time.time()),
-  # JWT expiration time (10 minute maximum)
-  'exp': int(time.time()) + (10 * 60),
-  # GitHub App's identifier
-  'iss': os.environ['APP_ID']
-}
+class JWTAuth(requests.auth.AuthBase):
+     def __call__(self, r):
+        r.headers['Authorization'] = 'bearer {}'.format(jsonwebtoken.generate())
+        return r
 
-with open(os.environ['PRIVATE_KEY_FILE']) as fp:
-    private_key = fp.read()
-encoded = jwt.encode(payload, private_key, algorithm='RS256')
-
-print "👋", encoded
+response = requests.get('https://api.github.com/app',
+    auth=JWTAuth(),
+    headers=dict(accept='application/vnd.github.machine-man-preview+json'))
+print(response.json())
