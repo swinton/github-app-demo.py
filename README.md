@@ -1,19 +1,7 @@
-# smee.py
+# :construction: :warning: Under construction :warning: :construction:
 
-A [smee](https://smee.io/) client example written in Python.
+## `github-app-demo.py`
 
-## Installation
+An example GitHub App, written in Python 3 and using Flasks, Requests.
 
-Install dependencies:
-
-```
-pipenv install
-```
-
-Generate a `.env` from the included `env.example` and update the values to reflect your environment.
-
-## Usage
-
-```
-./script/server
-```
+Clearly, a work in progress :stuck_out_tongue_closed_eyes:
