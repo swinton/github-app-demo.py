@@ -39,16 +39,25 @@ class JWTAuth(requests.auth.AuthBase):
         r.headers['Authorization'] = 'bearer {}'.format(self.generate_token())
         return r
 
-with open(os.environ['PRIVATE_KEY_FILE']) as fp:
-    private_pem = fp.read()
 
-authorization = JWTAuth(
-    iss=os.environ['APP_ID'],
-    key=private_pem)
+def read_private_key():
+    with open(os.environ['PRIVATE_KEY_FILE']) as fp:
+        private_key = fp.read()
+    return private_key
 
-response = requests.get('https://api.github.com/app',
-    auth=authorization,
-    headers=dict(accept='application/vnd.github.machine-man-preview+json'))
 
-# Print the response
-print(response.json())
+def authenticate():
+    authorization = JWTAuth(
+        iss=os.environ['APP_ID'],
+        key=read_private_key())
+
+    response = requests.get('https://api.github.com/app',
+        auth=authorization,
+        headers=dict(accept='application/vnd.github.machine-man-preview+json'))
+
+    return response
+
+
+if __name__ == '__main__':
+    import pprint
+    pprint.pprint(authenticate().json())
