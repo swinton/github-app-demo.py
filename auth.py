@@ -1,11 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 
-"""
-Authenticate as a GitHub App:
-https://developer.github.com/apps/building-github-apps/authentication-options-for-github-apps/#authenticating-as-a-github-app
-"""
-
 import os
 import time
 
@@ -40,24 +35,33 @@ class JWTAuth(requests.auth.AuthBase):
         return r
 
 
-def read_private_key():
-    with open(os.environ['PRIVATE_KEY_FILE']) as fp:
-        private_key = fp.read()
-    return private_key
+class GitHubApp():
+    session = None
+    private_key = None
 
+    def __init__(self):
+        self.session = requests.Session()
+        self.session.auth = JWTAuth(
+            iss=os.environ['APP_ID'],
+            key=self.read_private_key())
+        self.session.headers.update(dict(
+            accept='application/vnd.github.machine-man-preview+json'))
 
-def authenticate():
-    authorization = JWTAuth(
-        iss=os.environ['APP_ID'],
-        key=read_private_key())
+    def read_private_key(self):
+        if self.private_key is None:
+            with open(os.environ['PRIVATE_KEY_FILE']) as fp:
+                self.private_key = fp.read()
+        return self.private_key
 
-    response = requests.get('https://api.github.com/app',
-        auth=authorization,
-        headers=dict(accept='application/vnd.github.machine-man-preview+json'))
+    def get_app(self):
+        return self.session.get('https://api.github.com/app')
 
-    return response
+    def get_installations(self):
+        return self.session.get('https://api.github.com/app/installations')
 
 
 if __name__ == '__main__':
     import pprint
-    pprint.pprint(authenticate().json())
+    app = GitHubApp()
+    pprint.pprint(app.get_app().json())
+    pprint.pprint(app.get_installations().json())
