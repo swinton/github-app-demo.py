@@ -53,15 +53,32 @@ class GitHubApp():
                 self.private_key = fp.read()
         return self.private_key
 
+    def _request(self, method, url):
+        self.response = self.session.request(method, url)
+        return self.response.json()
+
+    def _get(self, url):
+        return self._request('GET', url)
+
+    def _post(self, url):
+        return self._request('POST', url)
+
     def get_app(self):
-        return self.session.get('https://api.github.com/app')
+        return self._get('https://api.github.com/app')
 
     def get_installations(self):
-        return self.session.get('https://api.github.com/app/installations')
+        return self._get('https://api.github.com/app/installations')
 
+    def get_installation_access_token(self, installation_id):
+        return self._post('https://api.github.com/installations/{}/access_tokens'
+                .format(installation_id))
 
 if __name__ == '__main__':
     import pprint
+
     app = GitHubApp()
-    pprint.pprint(app.get_app().json())
-    pprint.pprint(app.get_installations().json())
+    pprint.pprint(app.get_app())
+
+    installations = app.get_installations()
+    pprint.pprint(installations)
+    pprint.pprint([(installation['id'], app.get_installation_access_token(installation['id'])) for installation in installations])
