@@ -40,6 +40,7 @@ class GitHubApp():
     private_key = None
 
     def __init__(self):
+        self.domain = os.environ.get('GITHUB_API_DOMAIN', 'api.github.com')
         self.session = requests.Session()
         self.session.auth = JWTAuth(
             iss=os.environ['APP_ID'],
@@ -53,24 +54,24 @@ class GitHubApp():
                 self.private_key = fp.read()
         return self.private_key
 
-    def _request(self, method, url):
-        self.response = self.session.request(method, url)
+    def _request(self, method, path):
+        self.response = self.session.request(method, 'https://{}/{}'.format(self.domain, path))
         return self.response.json()
 
-    def _get(self, url):
-        return self._request('GET', url)
+    def _get(self, path):
+        return self._request('GET', path)
 
-    def _post(self, url):
-        return self._request('POST', url)
+    def _post(self, path):
+        return self._request('POST', path)
 
     def get_app(self):
-        return self._get('https://api.github.com/app')
+        return self._get('app')
 
     def get_installations(self):
-        return self._get('https://api.github.com/app/installations')
+        return self._get('app/installations')
 
     def get_installation_access_token(self, installation_id):
-        return self._post('https://api.github.com/installations/{}/access_tokens'
+        return self._post('installations/{}/access_tokens'
                 .format(installation_id))
 
 if __name__ == '__main__':
