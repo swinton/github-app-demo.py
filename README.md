@@ -1,7 +1,25 @@
-# :construction: :warning: Under construction :warning: :construction:
+# `github-app-demo.py`
 
-## `github-app-demo.py`
+A _Pythonic_ way of developing [GitHub Apps](https://developer.github.com/apps/).
 
-An example [GitHub App](https://developer.github.com/apps/), written with Python 3.
+## Examples
 
-Clearly, a work in progress :stuck_out_tongue_closed_eyes:
+```python
+from github import App
+app = App()
+
+# Get a specific installation of this App
+installation = app.get_installation('octocat')
+
+# Get all the repositories associated with installation
+repositories = installation.get_repositories()
+
+# :soon:
+repository = app.get_repository('octocat/Hello-World')
+```
+
+More :soon:
+
+## Get started
+
+:construction: `TODO` :construction:
